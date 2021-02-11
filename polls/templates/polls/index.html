@@ -1,0 +1,52 @@
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <style>
+    body {
+        background-color: white;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+    .form {
+        border: 3px solid white;
+        box-shadow: 0px 0px 10px 1px gray;
+        border-radius: 5px;
+        padding: 100px 100px 100px 100px;
+        display: inline-block;
+    }
+    </style>
+    <script>
+        function foc(id){document.getElementById(id).classList.add('active')}
+        function unfoc(id){document.getElementById(id).classList.remove('active')}
+    </script>
+</head>
+<body>
+<div class="form">
+<h1 class="mb-1">Choose your destiny...</h1>
+{% if latest_question_list %}
+    <div class="list-group">
+    {% for question in latest_question_list %}
+        <a class="list-group-item list-group-item-action flex-column align-items-start" id="{{ question.id }}" onmouseover="foc('{{ question.id }}')" onmouseout="unfoc('{{ question.id }}')" href="{% url 'detail' question.id %}">
+            <p class="mb-1">{{ question.question_text }}</p>
+            <small>{{ question.pub_date }}</small>
+        </a>
+    {% endfor %}
+    </div>
+    {% for i in pages %}
+        {% if i == True %}
+            <a href="?id={{ forloop.counter }}" class="btn btn-primary disabled">{{ forloop.counter }}</a>
+        {% else %}
+            <a href="?id={{ forloop.counter }}" class="btn btn-light">{{ forloop.counter }}</a>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p class="mb-1">No polls are avaliable</p>
+{% endif %}
+<br><br>
+<a href="{% url 'add' %}" class="btn btn-primary">New question</a>
+</div>
+</body>

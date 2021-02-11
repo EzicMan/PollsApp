@@ -1,0 +1,121 @@
+<head>
+    <script>
+        var i = Number('{{ last_id }}')
+        function ch(){
+            var child = document.getElementById('choices').children
+            var isNotEmpty = true
+            for(k = 0; k < child.length; k++){
+                if(child[k].children[0].value === ''){
+                    isNotEmpty = false
+                    break
+                }
+            }
+            if(document.getElementById('date').validity.valid 
+            && document.getElementById('time').validity.valid 
+            && document.getElementById('qt').value
+            && isNotEmpty)
+            {
+                document.getElementById('sendForm').disabled = false 
+            }
+            else
+            {
+                document.getElementById('sendForm').disabled = true 
+            }
+        }
+        function add(){
+            var block_to_insert = document.createElement( 'div' )
+            block_to_insert.classList.add('input-group')
+            block_to_insert.setAttribute('id',String(i))
+            var input_text = document.createElement('input')
+            input_text.classList.add('form-control')
+            input_text.setAttribute('type','text')
+            input_text.setAttribute('id',String(i))
+            input_text.setAttribute('oninput','ch()')
+            input_text.setAttribute('aria-describedby','button-addon'+String(i))
+            block_to_insert.appendChild(input_text)
+            var input_button = document.createElement('input')
+            input_button.classList.add('btn')
+            input_button.classList.add('btn-outline-secondary')
+            input_button.setAttribute('type','button')
+            input_button.setAttribute('id','button-addon'+String(i))
+            input_button.setAttribute('value','X')
+            input_button.setAttribute('onclick',"remove('"+String(i)+"')")
+            block_to_insert.appendChild(input_button)
+            i = i + 1
+            document.getElementById('choices').appendChild(block_to_insert)
+            document.getElementById('sendForm').disabled = true
+        }
+        function remove(butID){
+            document.getElementById(butID).remove()
+            if(document.getElementById('choices').children.length != 0){
+                document.getElementById('sendForm').disabled = false
+            }else{
+                document.getElementById('sendForm').disabled = true
+            }
+        }
+        function test(){
+            var mas = []
+            var child = document.getElementById('choices').children
+            for(k = 0; k < child.length; k++){
+                mas = mas.concat(child[k].children[0].value + "\0")
+            }
+            document.getElementById('arrayChoice').value = mas.toString()
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <style>
+    body {
+        text-align: center;
+        background-color: white;
+    }
+    .form {
+        border: 3px solid white;
+        box-shadow: 0px 0px 10px 1px gray;
+        border-radius: 5px;
+        padding: 100px 100px 100px 100px;
+        display: inline-block;
+    }
+    .vlevo {
+        text-align: left;
+    }
+    .vpravo {
+        text-align: right;
+    }
+    </style>
+</head>
+<body>
+<form action="{% url 'save' %}" class="form" onsubmit="test()" method="POST">{% csrf_token %}
+    <h1 class="mb-1">Edit Question</h1>
+    <input type="hidden" name="qid" value="{{ question_id }}">
+    <div class="vlevo" id="vlevo">
+        <label>Question text</label>
+        <input type="text" id="qt" name="qt" class="form-control" oninput="ch()" value="{{ question_text }}">
+        <label>Question date</label>
+        <input type="date" id="date" name="date" class="form-control" oninput="ch()" value="{{ date }}">
+        <input type="time" id="time" name="time" class="form-control" oninput="ch()" value="{{ time }}">
+        <input type="hidden" id="arrayChoice" name="arrayChoice">
+        <input type="hidden" name="createNew" value="{{ create_new }}">
+        <label>Choices</label><br>
+        <div id="choices">
+        {% for choice in choices %}
+        <div class="input-group" id="{{ forloop.counter }}">
+        <input type="text" id="tid{{ forloop.counter }}" class="form-control" value="{{ choice }}" oninput="ch()" aria-describedby="button-addon{{ forloop.counter }}">
+        <input type="button" id="button-addon{{ forloop.counter }}" class="btn btn-outline-secondary" value="X" onclick="remove('{{ forloop.counter }}')">
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+    <br>
+    <div class="vpravo">
+        <input type="button" class="btn btn-light" onclick="add()" value="Add answer">
+    </div>
+    <br>
+    <input id="sendForm" type="submit" class="btn btn-primary" value="Edit" disabled="true">
+    {% if create_new == "false" %}
+    <a class="btn btn-light" href="{% url 'detail' question_id %}">Cancel</a>
+    {% elif create_new == "true" %}
+    <a class="btn btn-light" href="{% url 'index' %}">Cancel</a>
+    {% endif %}
+</form>
+</body>

@@ -1,0 +1,43 @@
+<head>
+    <script>function ch(){ document.getElementById('sendForm').disabled = false }</script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <style>
+    body {
+        text-align: center;
+        background-color: white;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+    .form {
+        border: 3px solid white;
+        box-shadow: 0px 0px 10px 1px gray;
+        border-radius: 5px;
+        padding: 100px 100px 100px 100px;
+        display: inline-block;
+    }
+    .vlevo {
+        text-align: left;
+    }
+    </style>
+</head>
+<body>
+<form action="{% url 'vote' %}" class="form" method="POST">{% csrf_token %}
+    <h1>{{ question.question_text }}</h1>
+    <input type="hidden" name="qid" value="{{ question.id }}">
+    <div class="vlevo">
+{% for choice in question.choice_set.all %}
+    <input type="radio" class="form-check-input" name="vote" onchange="ch();" id="choice_{{ choice.id }}" value="{{ choice.id }}">
+    <label>{{ choice.choice_text }} - {{ choice.votes }}</label><br>
+{% endfor %}
+    </div>
+    <br>
+    <input id="sendForm" type="submit" class="btn btn-primary" value="Vote" disabled="True">
+    {% load static %}<a href="{% url 'edit' question.id %}"><img src="{% static 'polls/edit.png' %}" alt="Simply Easy Learning" width="25" height="25"></a>
+    <a href="{% url 'delete' question.id %}"><img src="{% static 'polls/delete.png' %}" alt="Simply Easy Learning" width="25" height="25"></a>
+</form>
+</body>
